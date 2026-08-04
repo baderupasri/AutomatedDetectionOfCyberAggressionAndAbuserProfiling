@@ -1,0 +1,186 @@
+body {
+    font-family: Arial, sans-serif;
+    background: url("static/images/bg3.png") no-repeat center center fixed;
+    background-size: cover; /* makes it cover entire page */
+    padding: 40px;
+}
+
+/* LOGIN & REGISTER CENTER */
+
+.center-page{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.form-container{
+background:hwb(29 73% 5% / 0.902);
+padding:45px;
+display: inline-block;
+width:350px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+.form-container h1{
+margin-bottom:20px;
+}
+
+.form-container input{
+width:93%;
+padding:12px;
+margin:10px 0;
+border-radius:6px;
+border:1px solid #ddd;
+}
+
+.form-container button{
+width:50%;
+padding:10px;
+background:hsl(228, 56%, 62%);
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+.form-container button:hover{
+background:hsl(228, 56%, 62%);
+}
+
+/* CHAT CONTAINER */
+
+.chat-wrapper{
+width:450px;
+height:600px;
+margin:40px auto;
+background:hwb(29 73% 5% / 0.902);
+border-radius:15px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+display:flex;
+flex-direction:column;
+overflow:hidden;
+}
+
+/* HEADER */
+
+.chat-header{
+background:hsl(228, 56%, 62%);
+padding:15px;
+font-weight:bold;
+display:flex;
+justify-content:space-between;
+}
+
+/* CHAT AREA */
+
+.chat-box{
+flex:1;
+padding:10px;
+overflow-y:auto;
+background:#f9fafb;
+display:flex;
+flex-direction:column;
+}
+
+/* MESSAGES */
+
+.message{
+display:inline-block;
+max-width:70%;
+padding:8px 12px;
+margin:4px 0;
+border-radius:10px;
+font-size:14px;
+word-wrap:break-word;
+}
+
+.sent{
+background:hsl(228, 56%, 62%);
+color:white;
+margin-left:auto;
+}
+
+.received{
+background:#e5e7eb;
+color:black;
+margin-right:auto;
+}
+
+/* INPUT AREA */
+
+.input-area{
+display:flex;
+border-top:1px solid #ddd;
+}
+
+.input-area input{
+flex:1;
+padding:12px;
+border:none;
+outline:none;
+font-size:14px;
+}
+
+.input-area button{
+background:hsl(228, 56%, 62%);
+border:none;
+color:white;
+padding:12px 20px;
+cursor:pointer;
+}
+
+.input-area button:hover{
+background:#3b5be3;
+}
+
+.blocked-message{
+background:#fff3cd;
+color:#856404;
+padding:8px 12px;
+margin:6px auto;
+border-radius:8px;
+font-size:13px;
+text-align:center;
+max-width:70%;
+}
+
+#notificationBox{
+position:fixed;
+top:20px;
+right:20px;
+z-index:1000;
+}
+
+.notification{
+background:#ffcc00;
+color:#333;
+padding:12px 16px;
+margin-top:10px;
+border-radius:8px;
+font-size:14px;
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
+animation:slideIn 0.3s ease;
+}
+
+.warning{
+background:#ffcc00;
+}
+
+.alert{
+background:#ff6b6b;
+color:white;
+}
+
+@keyframes slideIn{
+from{
+transform:translateX(100%);
+opacity:0;
+}
+to{
+transform:translateX(0);
+opacity:1;
+}
+}
