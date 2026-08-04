@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+
+<title>Cyber Aggression Chat</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+</head>
+<style>
+body {
+    background: url("{{ url_for('static', filename='images/bg3.png') }}") no-repeat center center fixed;
+    background-size: cover;
+    padding: 40px;
+}
+</style>
+<body>
+<div id="notificationBox"></div>
+<div class="chat-wrapper">
+
+<div class="chat-header">
+<span id="chatUser">Connecting...</span>
+<a href="/logout">Logout</a>
+</div>
+
+<div id="chatBox" class="chat-box"></div>
+
+<div class="input-area">
+
+<input id="messageInput" placeholder="Type message...">
+
+<button onclick="sendMessage()">Send</button>
+
+</div>
+
+</div>
+
+<script>
+let username = "{{ session['user'] }}";
+let receiver = "{{ receiver }}";
+document.addEventListener("DOMContentLoaded", function(){
+document.getElementById("chatUser").innerText = "Chat with " + receiver;
+});
+</script>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

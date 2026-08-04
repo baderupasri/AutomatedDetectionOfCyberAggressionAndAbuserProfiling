@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url("{{ url_for('static', filename='images/bg3.png') }}") no-repeat center center fixed;
+            background-size: cover;
+            padding: 40px;
+        }
+        h2 {
+            text-align: center;
+            color: hsl(0, 0%, 10%);
+        }
+
+        .container {
+            width: 900px;
+            margin: auto;
+            background: hwb(29 73% 5% / 0.902); /* semi-transparent to see background */
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow:0 0 10px rgba(0,0,0,0.2);
+        }
+
+        h3 {
+            margin-top: 30px;
+            color: hsl(0, 2%, 13%);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: hsl(228, 56%, 62%);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #eef2fc;
+        }
+
+        .highlight {
+            color: red;
+            font-weight: bold;
+        }
+        .logout-btn{
+display:block;
+width:fit-content;
+margin-top:25px;
+margin-left:auto;
+padding:10px 18px;
+background:hsl(228, 56%, 62%);
+color:white;
+text-decoration:none;
+border-radius:6px;
+font-weight:bold;
+}
+
+.logout-btn:hover{
+background:hsl(228, 56%, 52%);
+}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Admin Moderation Dashboard</h2>
+
+    <!-- Aggressive Users -->
+    <h3>Aggressive Users (Violations &gt; 3)</h3>
+    <table>
+        <tr>
+            <th>User</th>
+            <th>Violations</th>
+        </tr>
+        {% for user, count in aggressive_users.items() %}
+        <tr>
+            <td>{{ user }}</td>
+            <td class="highlight">{{ count }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="2">No users exceeded 3 violations yet.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Blocked Messages -->
+    <h3>Blocked Messages</h3>
+    <table>
+        <tr>
+            <th>User</th>
+            <th>Message</th>
+        </tr>
+        {% for msg in blocked_messages %}
+        <tr>
+            <td>{{ msg.user }}</td>
+            <td>{{ msg.message }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="2">No blocked messages yet.</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="/admin_logout" class="logout-btn">Logout</a>
+</div>
+
+</body>
+</html>

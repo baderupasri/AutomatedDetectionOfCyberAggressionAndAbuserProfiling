@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Available Users</title>
+
+<style>
+
+body{
+font-family:Arial,sans-serif;
+background:url("{{ url_for('static', filename='images/bg3.png') }}") no-repeat center center fixed;
+background-size:cover;
+padding:40px;
+}
+
+h2{
+text-align:center;
+color:rgb(20, 19, 19);
+}
+
+.container{
+width:420px;
+margin:auto;
+background:hwb(29 73% 5% / 0.902);
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+.section{
+margin-bottom:25px;
+}
+
+.user{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin:8px 0;
+padding:6px;
+background:white;
+border-radius:6px;
+}
+
+button{
+background:hsl(228, 56%, 62%);
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:5px;
+cursor:pointer;
+margin-left:5px;
+}
+
+button.reject{
+background:#ff4d4d;
+}
+
+button.accept{
+background:#28a745;
+}
+button.chat{
+    background: #28a745;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Available Users</h2>
+
+<div class="section">
+<h3>Friends</h3>
+<div id="friends"></div>
+</div>
+
+<div class="section">
+<h3>Users</h3>
+<div id="users"></div>
+</div>
+
+<div class="section">
+<h3>Friend Requests</h3>
+<div id="requests"></div>
+</div>
+
+<div class="section">
+<h3>Sent Requests</h3>
+<div id="sent_requests"></div>
+</div>
+
+</div>
+<!-- Warning Dialog -->
+<div id="warningDialog"
+style="display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);">
+
+<div style="
+background:white;
+width:350px;
+padding:20px;
+border-radius:8px;
+margin:200px auto;
+text-align:center;">
+
+<h3>⚠ Safety Warning</h3>
+
+<p>This user has previous abuse violations.<br>
+Are you sure you want to accept this request?</p>
+
+<button onclick="confirmAccept()">Accept Anyway</button>
+<button class="reject" onclick="closeDialog()">Cancel</button>
+
+</div>
+
+</div>
+<script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+
+<script>
+
+const socket = io()
+
+let currentSender=""
+
+loadFriends()
+loadUsers()
+loadRequests()
+loadSentRequests()
+
+// ---------- FRIENDS ----------
+function loadFriends(){
+
+fetch("/get_friends")
+.then(res=>res.json())
+.then(data=>{
+
+let div=document.getElementById("friends")
+div.innerHTML=""
+
+data.friends.forEach(friend=>{
+
+let d=document.createElement("div")
+d.className="user"
+
+d.innerHTML=`
+<span>${friend}</span>
+<button class="chat" onclick="window.location='/chat/${friend}'">Chat</button>
+`
+
+div.appendChild(d)
+
+})
+
+})
+
+}
+
+// ---------- USERS ----------
+function loadUsers(){
+
+fetch("/get_users")
+.then(res=>res.json())
+.then(data=>{
+
+let div=document.getElementById("users")
+div.innerHTML=""
+
+data.users.forEach(user=>{
+
+let d=document.createElement("div")
+d.className="user"
+
+d.innerHTML=`
+<span>${user}</span>
+<button onclick="sendRequest('${user}')">Send Request</button>
+`
+
+div.appendChild(d)
+
+})
+
+})
+
+}
+
+// ---------- SEND REQUEST ----------
+function sendRequest(user){
+
+fetch("/send_request",{
+method:"POST",
+headers:{"Content-Type":"application/x-www-form-urlencoded"},
+body:"receiver="+user
+})
+.then(res=>res.json())
+.then(data=>{
+
+if(data.status=="already_sent"){
+alert("Request already sent")
+}
+else{
+alert("Request sent")
+loadSentRequests()
+}
+
+})
+
+}
+
+// ---------- FRIEND REQUESTS ----------
+function loadRequests(){
+
+fetch("/get_requests")
+.then(res=>res.json())
+.then(data=>{
+
+let div=document.getElementById("requests")
+div.innerHTML=""
+
+data.requests.forEach(req=>{
+
+let sender=req.sender
+let isAbuser=req.is_abuser
+
+let label=""
+
+if(isAbuser){
+label=" ⚠ abusive user"
+}
+
+let d=document.createElement("div")
+d.className="user"
+
+d.innerHTML=`
+<span>${sender}${label}</span>
+
+<div>
+<button onclick="acceptRequest('${sender}', ${isAbuser})">Accept</button>
+<button class="reject" onclick="rejectRequest('${sender}')">Reject</button>
+</div>
+`
+
+div.appendChild(d)
+
+})
+
+})
+
+}
+
+// ---------- SENT REQUESTS ----------
+function loadSentRequests(){
+
+fetch("/get_sent_requests")
+.then(res=>res.json())
+.then(data=>{
+
+let div=document.getElementById("sent_requests")
+div.innerHTML=""
+
+data.requests.forEach(req=>{
+
+let d=document.createElement("div")
+d.className="user"
+
+let button=""
+
+if(req.status=="pending"){
+button="<button disabled>Pending</button>"
+}
+
+if(req.status=="accepted"){
+button=`<button class='accept' disabled>Accepted</button>`
+}
+
+if(req.status=="rejected"){
+button="<button class='reject' disabled>Rejected</button>"
+}
+
+d.innerHTML=`
+<span>${req.receiver}</span>
+${button}
+`
+
+div.appendChild(d)
+
+})
+
+})
+
+}
+
+// ---------- ACCEPT ----------
+function acceptRequest(sender,isAbuser){
+
+if(isAbuser){
+
+currentSender=sender
+
+document.getElementById("warningDialog").style.display="block"
+
+return
+}
+
+fetch("/accept_request",{
+method:"POST",
+headers:{"Content-Type":"application/x-www-form-urlencoded"},
+body:"sender="+sender
+})
+.then(res=>res.json())
+.then(()=>{
+
+loadFriends()
+window.location="/chat/"+sender
+
+})
+
+}
+
+// ---------- REJECT ----------
+function rejectRequest(sender){
+
+fetch("/reject_request",{
+method:"POST",
+headers:{"Content-Type":"application/x-www-form-urlencoded"},
+body:"sender="+sender
+})
+.then(res=>res.json())
+.then(()=>{
+
+loadRequests()
+
+})
+
+}
+
+// ---------- CONFIRM ACCEPT ----------
+function confirmAccept(){
+
+document.getElementById("warningDialog").style.display="none"
+
+fetch("/accept_request",{
+method:"POST",
+headers:{"Content-Type":"application/x-www-form-urlencoded"},
+body:"sender="+currentSender
+})
+.then(res=>res.json())
+.then(()=>{
+
+window.location="/chat/"+currentSender
+
+})
+
+}
+
+// ---------- CLOSE DIALOG ----------
+function closeDialog(){
+
+document.getElementById("warningDialog").style.display="none"
+
+}
+
+socket.on("new_request",function(){
+loadRequests()
+})
+
+socket.on("accepted_redirect",function(data){
+
+alert(data.user+" accepted your request")
+window.location="/chat/"+data.user
+
+})
+
+</script>
+
+</body>
+</html>
