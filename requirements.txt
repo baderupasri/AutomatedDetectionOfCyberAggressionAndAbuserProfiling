@@ -1,0 +1,11 @@
+flask
+flask-socketio
+eventlet
+mysql-connector-python
+scikit-learn
+pandas
+numpy
+nltk
+Kaggle
+flask-mysqldb
+python-dotenv
